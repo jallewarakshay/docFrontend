@@ -2,7 +2,9 @@ import React, { use, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.js';
 import { Footer } from '../components/Footer.js';
+import axios from 'axios';
 import '../Styles/LoginDoctor.css';
+import { is } from 'date-fns/locale';
 
 export default function LoginDoctor() {
     const [isLogin, setIsLogin] = useState(true);
@@ -12,19 +14,38 @@ export default function LoginDoctor() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [isInCorrectPassword, setIsInCorrectPassword] = useState(false);
+
+    const api = axios.create({ 
+        baseURL: "http://localhost:8083/user"
+     })
 
 
-    function myFunc(e) {
+    async function myFunc(e) {
         e.preventDefault();
-        console.log(password, confirmPassword)
-        console.log(isLogin);
+        // console.log(password, confirmPassword)
+        // console.log(isLogin);
 
         if (handleSubmit()) {
             if (!isLogin)
 
-                navigate("/registerdoctor", { state: { password: password, confirmPassword: confirmPassword } })
-            else
-                navigate("/dashboardDoctor")
+                navigate("/registerdoctor", { state: {emailId: email, password: password, confirmPassword: confirmPassword } })
+            else{
+                try{
+                    const response = await api.post("/login", {emailId:email});
+                    if(response.status == 200){
+                        if(response.data.password === password){
+                            setIsInCorrectPassword(false);
+                            navigate("/dashboardDoctor")
+                        } else {
+                            setIsInCorrectPassword(true);
+                        }
+                    }
+                }
+                catch(error){
+                    console.error("Error occured");
+                }
+            }
         } else {
             return;
         }
@@ -118,7 +139,11 @@ export default function LoginDoctor() {
                                         type="password"
                                         placeholder="Confirm Password"
                                         value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        onChange={(e) => {
+                                            setIsInCorrectPassword(false);
+                                            setConfirmPassword(e.target.value)
+                                        }
+                                        }
                                     />
                                     {/* <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? "🙈" : "👁"}
@@ -127,7 +152,9 @@ export default function LoginDoctor() {
                                 </div>
                             )}
 
-                            <a href="#"><b>Forgot Password?</b></a>
+                            {isInCorrectPassword && <div style={{color:"red"}}>Incorrect Password</div>}
+
+                           {isLogin && <a href="#" className="forgot-password"><b>Forgot Password?</b></a>}
 
                             <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
                             <p>

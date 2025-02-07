@@ -3,15 +3,21 @@ import { Footer } from "../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { setRes } from '../actions'; // Make sure to import any action if needed
 import '../Styles/RegisterDoctor.css';
+
+
+const api= axios.create({
+    baseURL: 'http://localhost:8081/doctor'
+})
 
 export default function RegisterDoctor() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
 
-    const { password, confirmPassword } = location.state || {};
+    const {emailId, password, confirmPassword } = location.state || {};
     console.log(password, confirmPassword);
 
     const res = useSelector((state) => state.res);  // Accessing 'res' from the state
@@ -19,8 +25,8 @@ export default function RegisterDoctor() {
     const [isRegister, setIsRegister] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [data, setData] = useState({
-        fullName: "",
-        email: "",
+        fullname: "",
+        emailId: emailId,
         contact: "",
         qualification: "",
         speciality: "",
@@ -36,12 +42,12 @@ export default function RegisterDoctor() {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!data.fullName) newErrors.fullName = "Full name is required";
+        if (!data.fullname) newErrors.fullname = "Full name is required";
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!data.email) {
-            newErrors.email = "Email is required";
-        } else if (!emailPattern.test(data.email)) {
-            newErrors.email = "Please enter a valid email address";
+        if (!data.emailId) {
+            newErrors.emailId = "Email is required";
+        } else if (!emailPattern.test(data.emailId)) {
+            newErrors.emailId = "Please enter a valid email address";
         }
 
         const phonePattern = /^[0-9]{10}$/;
@@ -74,13 +80,19 @@ export default function RegisterDoctor() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const sendData = (event) => {
+    const sendData =async (event) => {
         event.preventDefault();
         if (!validateForm()) {
             return;
         }
+        try{
         dispatch(setRes(data));
+        const response = await api.post('/',data);
         navigate("/logindoctor");
+        }
+        catch(err){
+            console.log("There was an error",err);
+        }
     };
 
     useEffect(() => {
@@ -97,27 +109,30 @@ export default function RegisterDoctor() {
                     <div className="mb-3">
                         <h2><b><u>Doctor Details</u></b></h2>
                         <br />
-                        <label htmlFor="fullName" className="form-label">Full Name :</label>
+                        <label htmlFor="fullname" className="form-label">Full Name :</label>
                         <input
                             type="text"
-                            onChange={(event) => setData({ ...data, fullName: event.target.value })}
+                            onChange={(event) => setData({ ...data, fullname: event.target.value })}
                             className="form-control"
-                            id="fullName"
+                            id="fullname"
                             placeholder="Enter your Full Name here"
                         />
-                        {errors.fullName && <div className="text-danger">{errors.fullName}</div>}
+                        {errors.fullname && <div className="text-danger">{errors.fullname}</div>}
                     </div>
 
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label">Email Id :</label>
                         <input
-                            type="text"
+                            type="email"
                             className="form-control"
-                            id="email"
+                            id="emailId"
+                            name="emailId"
+                            value={data.emailId}
+                            disabled
                             placeholder="Enter your Email here"
-                            onChange={(event) => setData({ ...data, email: event.target.value })}
+                            onChange={(event) => setData({ ...data, emailId: event.target.value })}
                         />
-                        {errors.email && <div className="text-danger">{errors.email}</div>}
+                        {errors.emailId && <div className="text-danger">{errors.emailId}</div>}
                     </div>
 
                     <div className="mb-3">
