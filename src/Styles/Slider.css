@@ -1,0 +1,13 @@
+/* Remove blue outline on focus */
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Customize the background color on hover */
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0); /* Adjust opacity as needed */
+  border-radius: 5px; /* Optional for rounded corners */
+}
