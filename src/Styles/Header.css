@@ -1,0 +1,24 @@
+.small-oval-button {
+    border-radius: 50px; 
+    padding: 5px 20px; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+    transition: all 0.3s ease-in-out; 
+}
+
+.small-oval-button:hover {
+    background-color: #35c6dc; 
+    color: #fff; 
+    border-color: #41e4cc;
+}
+
+.hover-effect {
+    transition: all 0.3s ease-in-out; 
+}
+
+.hover-effect:hover {
+    color: #3aadde;
+    text-decoration: underline; 
+    transform: scale(1.1); 
+}
+
