@@ -15,38 +15,55 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
+  const [user,setUser]=useState({});
 
   const location = useLocation();
 
   const {userId } = location.state || {};
 
-  useEffect(() => {
+  useEffect( () => {
+    async function fetchDoc () {
     try{
       const api = axios.create({
         baseURL: "http://localhost:8081/doctor"
       });
-      const response = api.get("/"+ userId);
+      const response = await api.get("/"+ userId);
+      // console.log(response.data);
+      setUser(response.data);
   
-      if(response.status == 200){
-        console.log(response.data);
-      }
+      // if(response.status == 200){
+      //   console.log(response.data);
+      // }
     }catch(error){
       console.error("Error occured");
     }
-  },[]);
+   }
+   fetchDoc();
+  },[userId]);
 
+  useEffect(() => {
+    async function fetchAppointments() {
+      try {
+        const response = await axios.get("http://localhost:8082/appointments");
+        setAppointments(response.data);
+      } catch (error) {
+        console.error("Error fetching appointments", error);
+      }
+    }
+    fetchAppointments();
+  }, []);
 
 
   // Data for profile
   const profileData = {
-    "Full Name": "Dr. Pratham Pawar",
-    "Email Id": "pp@example.com",
-    "Contact No.": "123-456-7890",
-    "Qualification": "MBBS",
-    "Speciality": "Gynecology",
-    "Experience": "4 years",
-    "Gender": "Male",
-    "License": "123456789"
+    "Full Name": `${user.fullname}`,
+    "Email Id": `${user.email}`,
+    "Contact No.": `${user.contact}`,
+    "Qualification": `${user.qualification}`,
+    "Speciality": `${user.speciality}`,
+    "Experience": `${user.experience}`,
+    "Gender": `${user.gender}`,
+    "License": `${user.license}`
   };
 
   const history = [
@@ -54,21 +71,21 @@ export default function DoctorDashboard() {
     { name: "Abhinav Kawalkar", date: "2025-01-20", diagnosis: "Piles" }
   ];
 
-  // Load appointments from local storage
-  useEffect(() => {
-    const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    setAppointments(storedAppointments);
-  }, []);
+  // // Load appointments from local storage
+  // useEffect(() => {
+  //   const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  //   setAppointments(storedAppointments);
+  // }, []);
 
-  // Listen for changes in localStorage (for syncing)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-      setAppointments(storedAppointments);
-    }, 1000); // Check for changes every second
+  // // Listen for changes in localStorage (for syncing)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  //     setAppointments(storedAppointments);
+  //   }, 1000); // Check for changes every second
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, []);
+  //   return () => clearInterval(interval); // Cleanup interval on component unmount
+  // }, []);
 
   // Bar Chart Data (Appointments Count)
   const chartDataBar = {
@@ -104,23 +121,53 @@ export default function DoctorDashboard() {
     ],
   };
 
-  // Update appointment status
-  const updateStatus = (id, newStatus) => {
-    const updatedAppointments = appointments.map((appointment) =>
-      appointment.id === id ? { ...appointment, status: newStatus } : appointment
-    );
-    setAppointments(updatedAppointments);
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
-    toast.success(`Appointment marked as ${newStatus}`);
-  };
+  // // Update appointment status
+  // const updateStatus = (id, newStatus) => {
+  //   const updatedAppointments = appointments.map((appointment) =>
+  //     appointment.id === id ? { ...appointment, status: newStatus } : appointment
+  //   );
+  //   setAppointments(updatedAppointments);
+  //   localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+  //   toast.success(`Appointment marked as ${newStatus}`);
+  // };
 
-  // Cancel Appointment
-  const cancelAppointment = (id) => {
-    const updatedAppointments = appointments.filter((appointment) => appointment.id !== id);
-    setAppointments(updatedAppointments);
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
-    toast.success("Appointment has been cancelled.");
-  };
+  // // Cancel Appointment
+  // const cancelAppointment = (id) => {
+  //   const updatedAppointments = appointments.filter((appointment) => appointment.id !== id);
+  //   setAppointments(updatedAppointments);
+  //   localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+  //   toast.success("Appointment has been cancelled.");
+  // };
+   
+
+    // Update appointment status
+    const updateStatus = async (id, newStatus) => {
+      try {
+        await axios.put(`http://localhost:8082/appointments/${id}`, { status: newStatus });
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment.id === id ? { ...appointment, status: newStatus } : appointment
+          )
+        );
+        toast.success(`Appointment marked as ${newStatus}`);
+      } catch (error) {
+        console.error("Error updating appointment status", error);
+      }
+    };
+  
+    // Cancel Appointment
+    const cancelAppointment = async (id) => {
+      try {
+        await axios.delete(`http://localhost:8082/appointments/${id}`);
+        setAppointments((prevAppointments) =>
+          prevAppointments.filter((appointment) => appointment.id !== id)
+        );
+        toast.success("Appointment has been cancelled.");
+      } catch (error) {
+        console.error("Error cancelling appointment", error);
+      }
+    };
+
 
   return (
     <>
@@ -129,7 +176,8 @@ export default function DoctorDashboard() {
         <div className="row">
           {/* Sidebar */}
           <div className="col-md-3 bg-light p-3">
-            <h4></h4>
+            <h4>Welcome,</h4>
+            <h5> Dr. {user.fullname}</h5>
             <button
               className="btn btn-primary w-100 mb-2"
               onClick={() => setSelectedView("overview")}

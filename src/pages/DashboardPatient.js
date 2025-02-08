@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-
+import axios from 'axios';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 function DashboardPatient() {
@@ -15,31 +15,47 @@ function DashboardPatient() {
   const [time, setTime] = useState("");
   const [selectedView, setSelectedView] = useState("overview");
 
-  // Load appointments from local storage
-  useEffect(() => {
-    const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    setAppointments(storedAppointments);
-  }, []);
+ // Fetch appointments from the database
+ useEffect(() => {
+  async function fetchAppointments() {
+    try {
+      const response = await axios.get("http://localhost:8082/appointments");
+      setAppointments(response.data);
+    } catch (error) {
+      console.error("Error fetching appointments", error);
+    }
+  }
+  fetchAppointments();
+}, []);
+
+
+
+  // // Load appointments from local storage
+  // useEffect(() => {
+  //   const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  //   setAppointments(storedAppointments);
+  // }, []);
 
   // Handle form submit and save to localStorage
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!patientName || !date || !time) {
       toast.error("Please fill all fields!");
       return;
     }
 
-    const newAppointment = { id: Date.now(), patientName, date, time, status: "Pending" };
-    const updatedAppointments = [...appointments, newAppointment];
-    setAppointments(updatedAppointments);
-
-    // Save to localStorage
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
-
-    toast.success("Appointment booked successfully!");
-    setPatientName("");
-    setDate("");
-    setTime("");
+    const newAppointment = { patientName, date, time, status: "Pending" };
+    try {
+      const response = await axios.post("http://localhost:8082/appointments", newAppointment);
+      setAppointments([...appointments, response.data]);
+      toast.success("Appointment booked successfully!");
+      setPatientName("");
+      setDate("");
+      setTime("");
+    } catch (error) {
+      console.error("Error booking appointment", error);
+      toast.error("Error booking appointment");
+    }
   };
 
   // Chart Data - Appointments by Date
