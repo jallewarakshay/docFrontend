@@ -36,7 +36,7 @@ export default function LoginDoctor() {
                     if(response.status == 200){
                         if(response.data.password === password){
                             setIsInCorrectPassword(false);
-                            navigate("/dashboardDoctor")
+                            navigate("/dashboardDoctor",{state: {userId: response.data.userId}});
                         } else {
                             setIsInCorrectPassword(true);
                         }
