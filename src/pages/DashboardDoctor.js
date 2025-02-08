@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Bar } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import { data, useLocation } from "react-router-dom";
+import axios from "axios";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -13,6 +15,27 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
+
+  const location = useLocation();
+
+  const {userId } = location.state || {};
+
+  useEffect(() => {
+    try{
+      const api = axios.create({
+        baseURL: "http://localhost:8081/doctor"
+      });
+      const response = api.get("/"+ userId);
+  
+      if(response.status == 200){
+        console.log(response.data);
+      }
+    }catch(error){
+      console.error("Error occured");
+    }
+  },[]);
+
+
 
   // Data for profile
   const profileData = {
@@ -106,7 +129,7 @@ export default function DoctorDashboard() {
         <div className="row">
           {/* Sidebar */}
           <div className="col-md-3 bg-light p-3">
-            <h4>Doctor Dashboard</h4>
+            <h4></h4>
             <button
               className="btn btn-primary w-100 mb-2"
               onClick={() => setSelectedView("overview")}
