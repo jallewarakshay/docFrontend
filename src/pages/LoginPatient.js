@@ -16,11 +16,11 @@ export default function LoginPatient() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const [isInCorrectPassword,setIsInCorrectPassword] = useState(false);
+    const [isInCorrectPassword, setIsInCorrectPassword] = useState(false);
 
     const navigate = useNavigate();
 
-    async function  myFunc(e) {
+    async function myFunc(e) {
         e.preventDefault();
         // console.log(password, confirmPassword)
         // console.log(isLogin);
@@ -33,19 +33,19 @@ export default function LoginPatient() {
                 navigate("/registerpatient", { state: { emailId: email, password: password, confirmPassword: confirmPassword } })
             else {
                 try {
-                   const response  = await api.post("/login", {emailId:email});
-
-                   if(response.status == 200){
-                        if(response.data.password === password){
+                    const response = await api.post("/login", { emailId: email });
+                    console.log("userData:",response.data.userId);
+                    if (response.status == 200) {
+                        if (response.data.password === password) {
                             setIsInCorrectPassword(false);
-                            navigate("/dashboardPatient")
+                            navigate("/dashboardPatient", { state: { userId: response.data.userId } })
                         } else {
                             setIsInCorrectPassword(true);
                         }
-                   }
-                //    console.log(response.data.password,response.data.emailId);
-                //    console.log(response.data);
-                } catch(error) {
+                    }
+                    //    console.log(response.data.password,response.data.emailId);
+                    //    console.log(response.data);
+                } catch (error) {
                     console.error("Error occured");
                 }
             }
@@ -117,9 +117,10 @@ export default function LoginPatient() {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Password"
                                     value={password}
-                                    onChange={(e) =>{ 
+                                    onChange={(e) => {
                                         setIsInCorrectPassword(false);
-                                        setPassword(e.target.value)}}
+                                        setPassword(e.target.value)
+                                    }}
                                 />
                                 {/* <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? "🙈" : "👁"}
@@ -140,7 +141,7 @@ export default function LoginPatient() {
                                 </>
                             )}
 
-                            {isInCorrectPassword && <div style={{color:"red"}}>Incorrect Password</div> }
+                            {isInCorrectPassword && <div style={{ color: "red" }}>Incorrect Password</div>}
 
                             {isLogin && <a href="#" className="forgot-password">Forgot Password?</a>}
 

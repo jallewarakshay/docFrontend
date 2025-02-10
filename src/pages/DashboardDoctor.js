@@ -106,6 +106,7 @@ export default function DoctorDashboard() {
 
   // Update appointment status
   const updateStatus = (id, newStatus) => {
+    
     const updatedAppointments = appointments.map((appointment) =>
       appointment.id === id ? { ...appointment, status: newStatus } : appointment
     );

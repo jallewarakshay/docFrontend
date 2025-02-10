@@ -5,41 +5,78 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 function DashboardPatient() {
   const [appointments, setAppointments] = useState([]);
-  const [patientName, setPatientName] = useState("");
+  // const [patientName, setPatientName] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [selectedView, setSelectedView] = useState("overview");
+  const [allDocs, setAllDocs] = useState([]);
+  const [docId, setDocId] = useState("");
+
+  const location = useLocation();
+  const { userId } = location.state || {}
 
   // Load appointments from local storage
+  const apptApi = axios.create({
+    baseURL: "http://localhost:8082/appointments"
+  })
   useEffect(() => {
-    const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    setAppointments(storedAppointments);
+    const fetchAppointments = async () => {
+      console.log("userId:", userId);
+      try {
+        const response = await apptApi.get("/patient/" + userId);
+        console.log(response.data);
+        response.status == 200 ? setAppointments(response.data) : setAppointments([]);
+      } catch (err) {
+        console.error("Error fetching appointments");
+      }
+    }
+    fetchAppointments();
   }, []);
 
   // Handle form submit and save to localStorage
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!patientName || !date || !time) {
+    if (!date || !time) {
       toast.error("Please fill all fields!");
       return;
     }
 
-    const newAppointment = { id: Date.now(), patientName, date, time, status: "Pending" };
-    const updatedAppointments = [...appointments, newAppointment];
-    setAppointments(updatedAppointments);
+    // const newAppointment = { id: Date.now(), patientName, date, time, status: "Pending" };
+    // const updatedAppointments = [...appointments, newAppointment];
+    // setAppointments(updatedAppointments);
 
     // Save to localStorage
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
 
-    toast.success("Appointment booked successfully!");
-    setPatientName("");
-    setDate("");
-    setTime("");
+    // localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+    let data = {};
+    data.patientId = userId;
+    data.doctorId = docId;
+    data.appointmentDate = date;
+    data.duration = time;
+    data.status = "pending";
+
+    const bookAppointment = () => {
+      try {
+        const response = apptApi.post("/", data);
+        if (response.status == 200) {
+          toast.success("Appointment booked successfully!");
+          setDate("");
+          setTime("");
+        }
+      } catch (err) {
+        console.error("Error booking appointment");
+      }
+    }
+
+    bookAppointment();
+
   };
 
   // Chart Data - Appointments by Date
@@ -76,6 +113,29 @@ function DashboardPatient() {
       },
     ],
   };
+
+  useEffect(() => {
+    async function getDocs() {
+      const api = axios.create({
+        baseURL: "http://localhost:8081/doctor"
+      })
+      try {
+        const response = await api.get("/");
+        setAllDocs(response.data);
+        console.log(response.data);
+      } catch (err) {
+        console.error("Error occured");
+      }
+    }
+    getDocs();
+  }, [])
+
+  const handleModal = (docId) => {
+    setDocId(docId);
+    alert(docId);
+  }
+
+
 
   return (
     <>
@@ -125,15 +185,13 @@ function DashboardPatient() {
 
             {selectedView === "appointments" && (
               <div className="card p-4">
+                {allDocs.map((doc) =>
+                  <ul key={doc.doctorId}>
+                    <li><h1>{doc.fullname}</h1><span><button onClick={() => handleModal(doc.doctorId)}>Book Appointment</button></span></li>
+                  </ul>
+                )}
                 <h3>Book an Appointment</h3>
                 <form onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    placeholder="Patient Name"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    className="form-control mb-2"
-                  />
                   <input
                     type="date"
                     value={date}
