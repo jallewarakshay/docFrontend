@@ -23,7 +23,7 @@ export default function DoctorDashboard() {
   useEffect(() => {
     try{
       const api = axios.create({
-        baseURL: "http://localhost:8081/doctor"
+        baseURL: "http://localhost:8090/doctor"
       });
       const response = api.get("/"+ userId);
   

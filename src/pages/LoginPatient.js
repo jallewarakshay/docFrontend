@@ -9,6 +9,12 @@ const api = axios.create({
     baseURL: "http://localhost:8083/user"
 })
 
+const emailApi = axios.create({
+    baseURL: "http://localhost:8081/email"
+})
+
+
+
 export default function LoginPatient() {
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
@@ -38,6 +44,33 @@ export default function LoginPatient() {
                    if(response.status == 200){
                         if(response.data.password === password){
                             setIsInCorrectPassword(false);
+                            // alert(email);
+                            const loginEmailNotification = {
+                                "recipient":email,
+                                "subject":"Login Successful!",
+                                "msgBody":`
+                                We are pleased to inform you that your login to Swasthyacare was successful at  ${new Date().toLocaleString()}.
+
+                                You can now access your account and explore our services.
+                                If you did not attempt to log in, please secure your account by changing your password immediately.
+                                If you have any questions or need assistance, feel free to reach out to our support team.
+
+                                Thank you for choosing Swasthyacare!
+
+                                Best Regards,
+                                The Swasthyacare Team
+                                
+                                `
+                            }
+                            const res = await emailApi.post("/sendMail",loginEmailNotification);
+        
+        
+                            // Check if the email was sent successfully
+                            if (res.status === 200) {
+                                alert("Email notification sent successfully.");
+                            } else {
+                                alert("Failed to send email notification.");
+                            }
                             navigate("/dashboardPatient")
                         } else {
                             setIsInCorrectPassword(true);
