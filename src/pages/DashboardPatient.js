@@ -159,14 +159,15 @@ function DashboardPatient() {
               <div className="card p-4">
                 
                 {allDocs.map((doc)=> 
+                <div className="card p-4 my-3" style={{border:"1px solid black"}}>
                   <ul style={{ listStyleType: "square", listStyle:"none"}}  key={doc.doctorId}>
                     <li><h2>Dr. {doc.fullname}</h2>
-                <address><h5><b>Degree:</b>{doc.qualification}</h5></address>
-                
-                  <h5><b>speciality: </b>{doc.speciality}</h5>
+                <address><h5><b>Degree: </b>{doc.qualification.toUpperCase()}</h5></address>
+                  <h5><b>Speciality: </b>{doc.speciality.toUpperCase()}</h5>
                    <h5> {doc.experience} years of experience in career.</h5>
                    <span><button onClick={()=>handleModal()}>Book</button></span></li>
                   </ul>
+                </div>
                 )}
                 {showBookAppointment &&(
                  <div className="modal fade show d-block" tabIndex="-1" role="dialog">
@@ -174,7 +175,7 @@ function DashboardPatient() {
                    <div className="modal-content">
                      <div className="modal-header">
                        <h5 className="modal-title">Book an Appointment</h5><br/>
-                       <button type="button " style={{ color:'red'}} className="btn" onClick={handleModal}>X
+                       <button type="button " style={{ color:'red',width:'9%'}} className="btn btn-transparent close" onClick={handleModal}>X
                        </button>
                      </div>
                      <div className="modal-body">
