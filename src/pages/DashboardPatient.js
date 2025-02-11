@@ -159,8 +159,13 @@ function DashboardPatient() {
               <div className="card p-4">
                 
                 {allDocs.map((doc)=> 
-                  <ul key={doc.doctorId}>
-                    <li><h1>{doc.fullname}</h1><span><button onClick={()=>handleModal()}>Book</button></span></li>
+                  <ul style={{ listStyleType: "square", listStyle:"none"}}  key={doc.doctorId}>
+                    <li><h2>Dr. {doc.fullname}</h2>
+                <address><h5><b>Degree:</b>{doc.qualification}</h5></address>
+                
+                  <h5><b>speciality: </b>{doc.speciality}</h5>
+                   <h5> {doc.experience} years of experience in career.</h5>
+                   <span><button onClick={()=>handleModal()}>Book</button></span></li>
                   </ul>
                 )}
                 {showBookAppointment &&(
@@ -169,7 +174,7 @@ function DashboardPatient() {
                    <div className="modal-content">
                      <div className="modal-header">
                        <h5 className="modal-title">Book an Appointment</h5><br/>
-                       <button type="button "  className="btn" onClick={handleModal}>x
+                       <button type="button " style={{ color:'red'}} className="btn" onClick={handleModal}>X
                        </button>
                      </div>
                      <div className="modal-body">
