@@ -14,6 +14,8 @@ function DashboardPatient() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [selectedView, setSelectedView] = useState("overview");
+  const [allDocs, setAllDocs] = useState([]);
+  const [showBookAppointment,setShowBookAppointment] = useState(false);
 
  // Fetch appointments from the database
  useEffect(() => {
@@ -30,13 +32,7 @@ function DashboardPatient() {
 
 
 
-  // // Load appointments from local storage
-  // useEffect(() => {
-  //   const storedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-  //   setAppointments(storedAppointments);
-  // }, []);
-
-  // Handle form submit and save to localStorage
+  // Handle form submit and save to database
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!patientName || !date || !time) {
@@ -93,6 +89,26 @@ function DashboardPatient() {
     ],
   };
 
+  useEffect(()=>{
+    async function getDocs(){
+      const api = axios.create({
+        baseURL:"http://localhost:8081/doctor"
+      })
+      try{
+        const response = await api.get("/");
+        setAllDocs(response.data);
+        console.log(response.data);
+      }catch(err){
+        console.error("Error occured");
+      }
+    }
+    getDocs();
+  },[])
+
+  const handleModal = ()=>{
+    setShowBookAppointment(!showBookAppointment);
+  };
+
   return (
     <>
       <HeaderLog />
@@ -139,33 +155,53 @@ function DashboardPatient() {
               </div>
             )}
 
-            {selectedView === "appointments" && (
+{selectedView === "appointments" && (
               <div className="card p-4">
-                <h3>Book an Appointment</h3>
-                <form onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    placeholder="Patient Name"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    className="form-control mb-2"
-                  />
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="form-control mb-2"
-                  />
-                  <input
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    className="form-control mb-2"
-                  />
-                  <button type="submit" className="btn btn-success w-100">
-                    Book Appointment
-                  </button>
-                </form>
+                
+                {allDocs.map((doc)=> 
+                  <ul key={doc.doctorId}>
+                    <li><h1>{doc.fullname}</h1><span><button onClick={()=>handleModal()}>Book</button></span></li>
+                  </ul>
+                )}
+                {showBookAppointment &&(
+                 <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+                 <div className="modal-dialog modal-dialog-centered" role="document">
+                   <div className="modal-content">
+                     <div className="modal-header">
+                       <h5 className="modal-title">Book an Appointment</h5><br/>
+                       <button type="button "  className="btn" onClick={handleModal}>x
+                       </button>
+                     </div>
+                     <div className="modal-body">
+                       <form onSubmit={handleSubmit}>
+                         <input
+                           type="text"
+                           placeholder="Patient Name"
+                           value={patientName}
+                           onChange={(e) => setPatientName(e.target.value)}
+                           className="form-control mb-2"
+                         />
+                         <input
+                           type="date"
+                           value={date}
+                           onChange={(e) => setDate(e.target.value)}
+                           className="form-control mb-2"
+                         />
+                         <input
+                           type="time"
+                           value={time}
+                           onChange={(e) => setTime(e.target.value)}
+                           className="form-control mb-2"
+                         />
+                         <button type="submit" className="btn btn-success w-100">
+                           Book Appointment
+                         </button>
+                       </form>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
               </div>
             )}
 

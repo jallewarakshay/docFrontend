@@ -16,7 +16,6 @@ export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
   const [user,setUser]=useState({});
-
   const location = useLocation();
 
   const {userId } = location.state || {};
@@ -40,7 +39,7 @@ export default function DoctorDashboard() {
    }
    fetchDoc();
   },[userId]);
-
+console.log(appointments.patientName);
   useEffect(() => {
     async function fetchAppointments() {
       try {
@@ -168,6 +167,7 @@ export default function DoctorDashboard() {
       }
     };
 
+    console.log(appointments);
 
   return (
     <>
@@ -241,6 +241,7 @@ export default function DoctorDashboard() {
                 </div>
               </div>
             )}
+          
 
             {selectedView === "appointments" && (
               <div className="card p-4">
@@ -260,7 +261,7 @@ export default function DoctorDashboard() {
                             onClick={() => updateStatus(appointment.id, "Confirmed")}
                           >
                             Confirm
-                          </button>
+                          </button>             
                           <button
                             className="btn btn-danger ml-2"
                             onClick={() => cancelAppointment(appointment.id)}
