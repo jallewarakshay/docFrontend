@@ -4,6 +4,7 @@ import HeaderLog from "../components/HeaderLog";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Bar, Pie } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -14,6 +15,7 @@ function DashboardPatient() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [selectedView, setSelectedView] = useState("overview");
+  const navigate = useNavigate();
 
   // Load appointments from local storage
   useEffect(() => {
@@ -150,6 +152,30 @@ function DashboardPatient() {
                     Book Appointment
                   </button>
                 </form>
+
+                <h4 className="mt-4">Your Appointments</h4>
+                {appointments.length > 0 ? (
+                  appointments.map((appointment) => (
+                    <div key={appointment.id} className="border p-3 mb-2">
+                      <p><strong>Status:</strong> {appointment.status}</p>
+                      <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appointment.time}</p>
+                      <button
+                        className="btn btn-info me-2"
+                        onClick={() => 
+                          // navigate(`/room/${appointment.id}`
+                          navigate(`/room/${appointment.id}`
+                          
+                          )} // Navigate to Videopage
+                      >
+                        Join
+                      </button>
+                      <button className="btn btn-secondary">View Report</button>
+                    </div>
+                  ))
+                ) : (
+                  <p>No appointments booked yet.</p>
+                )}
               </div>
             )}
 

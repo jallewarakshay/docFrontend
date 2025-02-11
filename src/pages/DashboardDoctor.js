@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Bar } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
-import { data, useLocation } from "react-router-dom";
+import { data, useLocation,useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Register Chart.js components
@@ -15,6 +15,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
+  const navigate = useNavigate();
 
   const location = useLocation();
 
@@ -224,8 +225,34 @@ export default function DoctorDashboard() {
                     ))
                   )}
                 </ul>
+                <h4 className="mt-4">Your Appointments</h4>
+                {appointments.length > 0 ? (
+                  appointments.map((appointment) => (
+                    <div key={appointment.id} className="border p-3 mb-2">
+                      <p><strong>Status:</strong> {appointment.status}</p>
+                      <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appointment.time}</p>
+                      <button
+                        className="btn btn-info me-2"
+                        onClick={() => 
+                          // navigate(`/room/${appointment.id}`
+                          navigate(`/room/${appointment.id}`
+                          
+                          )} // Navigate to Videopage
+                      >
+                        Join
+                      </button>
+                      <button className="btn btn-secondary">View Report</button>
+                    </div>
+                  ))
+                ) : (
+                  <p>No appointments booked yet.</p>
+                )}
+                
               </div>
             )}
+
+            
 
             {selectedView === "profile" && (
               <div style={{ width: "50%", margin: "auto", padding: "20px", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" }}>

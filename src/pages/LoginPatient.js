@@ -62,15 +62,15 @@ export default function LoginPatient() {
                                 
                                 `
                             }
-                            const res = await emailApi.post("/sendMail",loginEmailNotification);
+                            // const res = await emailApi.post("/sendMail",loginEmailNotification);
         
         
                             // Check if the email was sent successfully
-                            if (res.status === 200) {
-                                alert("Email notification sent successfully.");
-                            } else {
-                                alert("Failed to send email notification.");
-                            }
+                            // if (res.status === 200) {
+                            //     alert("Email notification sent successfully.");
+                            // } else {
+                            //     alert("Failed to send email notification.");
+                            // }
                             navigate("/dashboardPatient")
                         } else {
                             setIsInCorrectPassword(true);
