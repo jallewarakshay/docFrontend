@@ -15,38 +15,22 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
-<<<<<<< HEAD
   const navigate = useNavigate();
-=======
   const [user, setUser] = useState({});
->>>>>>> dev-akshay
 
   const location = useLocation();
 
   const { userId } = location.state || {};
 
   useEffect(() => {
-<<<<<<< HEAD
-    try{
-      const api = axios.create({
-        baseURL: "http://localhost:8090/doctor"
-      });
-      const response = api.get("/"+ userId);
-  
-      if(response.status == 200){
-        console.log(response.data);
-      }
-    }catch(error){
-      console.error("Error occured");
-    }
-  },[]);
-=======
+
+    
+
     async function fetchDoc() {
       try {
         const api = axios.create({
           baseURL: "http://localhost:8081/doctor"
         });
->>>>>>> dev-akshay
 
         const response = await api.get("/" + userId);
         console.log(response.data);
@@ -95,7 +79,6 @@ export default function DoctorDashboard() {
     { name: "Abhinav Kawalkar", date: "2025-01-20", diagnosis: "Piles" }
   ];
 
-<<<<<<< HEAD
 //   const bookingConfirmationNotification = {
 //     recipients: [email1, email2], // Use the users' emails
 //     subject: "Appointment Status",
@@ -136,8 +119,6 @@ export default function DoctorDashboard() {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
-=======
->>>>>>> dev-akshay
   // Bar Chart Data (Appointments Count)
   const chartDataBar = {
     labels: ["Confirmed", "Cancelled", "Pending"],
@@ -173,17 +154,6 @@ export default function DoctorDashboard() {
   };
 
   // Update appointment status
-<<<<<<< HEAD
-  const updateStatus = (id, newStatus) => {
-    
-    const updatedAppointments = appointments.map((appointment) =>
-      appointment.id === id ? { ...appointment, status: newStatus } : appointment,
-    );
-
-    setAppointments(updatedAppointments);
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
-    toast.success(`Appointment marked as ${newStatus}`);
-=======
   const updateStatus = async (id, newStatus) => {
     try {
       await axios.put(`http://localhost:8082/appointments/${id}`, { status: newStatus });
@@ -196,7 +166,6 @@ export default function DoctorDashboard() {
     } catch (error) {
       console.error("Error updating appointment status", error);
     }
->>>>>>> dev-akshay
   };
 
   // Cancel Appointment
