@@ -15,13 +15,18 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
+<<<<<<< HEAD
   const navigate = useNavigate();
+=======
+  const [user, setUser] = useState({});
+>>>>>>> dev-akshay
 
   const location = useLocation();
 
-  const {userId } = location.state || {};
+  const { userId } = location.state || {};
 
   useEffect(() => {
+<<<<<<< HEAD
     try{
       const api = axios.create({
         baseURL: "http://localhost:8090/doctor"
@@ -35,7 +40,39 @@ export default function DoctorDashboard() {
       console.error("Error occured");
     }
   },[]);
+=======
+    async function fetchDoc() {
+      try {
+        const api = axios.create({
+          baseURL: "http://localhost:8081/doctor"
+        });
+>>>>>>> dev-akshay
 
+        const response = await api.get("/" + userId);
+        console.log(response.data);
+        setUser(response.data);
+
+        // if(response.status == 200){
+        //   console.log(response.data);
+        // }
+      } catch (error) {
+        console.error("Error occured");
+      }
+    }
+    fetchDoc();
+  }, [userId]);
+
+  useEffect(() => {
+    async function fetchAppointments() {
+      try {
+        const response = await axios.get("http://localhost:8082/appointments");
+        setAppointments(response.data);
+      } catch (error) {
+        console.error("Error fetching appointments", error);
+      }
+    }
+    fetchAppointments();
+  }, []);
 
   const emailApi = axios.create({
     baseURL: "http://localhost:8081/email"
@@ -43,14 +80,14 @@ export default function DoctorDashboard() {
 
   // Data for profile
   const profileData = {
-    "Full Name": "Dr. Pratham Pawar",
-    "Email Id": "pp@example.com",
-    "Contact No.": "123-456-7890",
-    "Qualification": "MBBS",
-    "Speciality": "Gynecology",
-    "Experience": "4 years",
-    "Gender": "Male",
-    "License": "123456789"
+    "Full Name": `${user.fullname}`,
+    "Email Id": `${user.email}`,
+    "Contact No.": `${user.contact}`,
+    "Qualification": `${user.qualification}`,
+    "Speciality": `${user.speciality}`,
+    "Experience": `${user.experience}`,
+    "Gender": `${user.gender}`,
+    "License": `${user.license}`
   };
 
   const history = [
@@ -58,6 +95,7 @@ export default function DoctorDashboard() {
     { name: "Abhinav Kawalkar", date: "2025-01-20", diagnosis: "Piles" }
   ];
 
+<<<<<<< HEAD
 //   const bookingConfirmationNotification = {
 //     recipients: [email1, email2], // Use the users' emails
 //     subject: "Appointment Status",
@@ -98,6 +136,8 @@ export default function DoctorDashboard() {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
+=======
+>>>>>>> dev-akshay
   // Bar Chart Data (Appointments Count)
   const chartDataBar = {
     labels: ["Confirmed", "Cancelled", "Pending"],
@@ -133,6 +173,7 @@ export default function DoctorDashboard() {
   };
 
   // Update appointment status
+<<<<<<< HEAD
   const updateStatus = (id, newStatus) => {
     
     const updatedAppointments = appointments.map((appointment) =>
@@ -142,15 +183,35 @@ export default function DoctorDashboard() {
     setAppointments(updatedAppointments);
     localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
     toast.success(`Appointment marked as ${newStatus}`);
+=======
+  const updateStatus = async (id, newStatus) => {
+    try {
+      await axios.put(`http://localhost:8082/appointments/${id}`, { status: newStatus });
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment.id === id ? { ...appointment, status: newStatus } : appointment
+        )
+      );
+      toast.success(`Appointment marked as ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating appointment status", error);
+    }
+>>>>>>> dev-akshay
   };
 
   // Cancel Appointment
-  const cancelAppointment = (id) => {
-    const updatedAppointments = appointments.filter((appointment) => appointment.id !== id);
-    setAppointments(updatedAppointments);
-    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
-    toast.success("Appointment has been cancelled.");
+  const cancelAppointment = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8082/appointments/${id}`);
+      setAppointments((prevAppointments) =>
+        prevAppointments.filter((appointment) => appointment.id !== id)
+      );
+      toast.success("Appointment has been cancelled.");
+    } catch (error) {
+      console.error("Error cancelling appointment", error);
+    }
   };
+
 
   return (
     <>
@@ -159,7 +220,8 @@ export default function DoctorDashboard() {
         <div className="row">
           {/* Sidebar */}
           <div className="col-md-3 bg-light p-3">
-            <h4></h4>
+            <h4>Welcome,</h4>
+            <h5> Dr. {user.fullname}</h5>
             <button
               className="btn btn-primary w-100 mb-2"
               onClick={() => setSelectedView("overview")}

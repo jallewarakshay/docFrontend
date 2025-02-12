@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -19,9 +20,13 @@ function DashboardPatient() {
   const [selectedView, setSelectedView] = useState("overview");
   const [allDocs, setAllDocs] = useState([]);
   const [docId, setDocId] = useState("");
+  const [patient,setPatient] = useState({});
 
   const location = useLocation();
-  const { userId } = location.state || {}
+  // const { userId } = location.state || {}
+  const {user} = useAuth();
+  console.log("userSession",user);
+  const userId = user.userId;
   const navigate = useNavigate();
 
   // Load appointments from local storage
@@ -50,13 +55,6 @@ function DashboardPatient() {
       return;
     }
 
-    // const newAppointment = { id: Date.now(), patientName, date, time, status: "Pending" };
-    // const updatedAppointments = [...appointments, newAppointment];
-    // setAppointments(updatedAppointments);
-
-    // Save to localStorage
-
-    // localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
     let data = {};
     data.patientId = userId;
     data.doctorId = docId;
@@ -132,6 +130,22 @@ function DashboardPatient() {
     getDocs();
   }, [])
 
+  useEffect(() => {
+    async function getPatient() {
+      const api = axios.create({
+        baseURL: "http://localhost:8089/patient"
+      })
+      try {
+        const response = await api.get("/"+userId);
+        setPatient(response.data);
+        console.log("Patient:",response.data)
+      } catch (err) {
+        console.error("Error occured");
+      }
+    }
+    getPatient();
+  }, [])
+
   const handleModal = (docId) => {
     setDocId(docId);
     alert(docId);
@@ -146,7 +160,8 @@ function DashboardPatient() {
         <div className="row">
           {/* Sidebar */}
           <div className="col-md-3 bg-light p-3">
-            <h4>Patient Dashboard</h4>
+            <h4>Welcome,</h4>
+            <h4>{patient.firstName + " "+ patient.lastName}</h4>
             <button
               className="btn btn-primary w-100 mb-2"
               onClick={() => setSelectedView("overview")}

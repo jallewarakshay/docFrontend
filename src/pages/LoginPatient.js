@@ -39,16 +39,15 @@ export default function LoginPatient() {
                 navigate("/registerpatient", { state: { emailId: email, password: password, confirmPassword: confirmPassword } })
             else {
                 try {
-                    const response = await api.post("/login", { emailId: email });
-                    console.log("userData:",response.data.userId);
+                    const response = await api.post('/login', { emailId: email, password: password }); console.log("userData:", response.data.userId);
+                    console.log(response.data);
                     if (response.status == 200) {
-                        if (response.data.password === password) {
                             setIsInCorrectPassword(false);
                             // alert(email);
                             const loginEmailNotification = {
-                                "recipient":email,
-                                "subject":"Login Successful!",
-                                "msgBody":`
+                                "recipient": email,
+                                "subject": "Login Successful!",
+                                "msgBody": `
                                 We are pleased to inform you that your login to Swasthyacare was successful at  ${new Date().toLocaleString()}.
 
                                 You can now access your account and explore our services.
@@ -62,22 +61,18 @@ export default function LoginPatient() {
                                 
                                 `
                             }
-                            // const res = await emailApi.post("/sendMail",loginEmailNotification);
-        
-        
-                            // Check if the email was sent successfully
-                            // if (res.status === 200) {
-                            //     alert("Email notification sent successfully.");
-                            // } else {
-                            //     alert("Failed to send email notification.");
-                            // }
-                            navigate("/dashboardPatient", { state: { userId: response.data.userId } })
+                            const { authToken, user } = response.data;
+                            sessionStorage.setItem('authToken', authToken);
+                            sessionStorage.setItem('user', JSON.stringify(user));
+                            navigate('/dashboardPatient', { state: { userId: user.userId, user } })
+                            // navigate("/dashboardPatient", { state: { userId: response.data.userId } })
                         } else {
                             setIsInCorrectPassword(true);
                         }
-                    }
-                    //    console.log(response.data.password,response.data.emailId);
-                    //    console.log(response.data);
+
+                        // setIsInCorrectPassword(false);
+
+                    
                 } catch (error) {
                     console.error("Error occured");
                 }
