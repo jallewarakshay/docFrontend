@@ -9,8 +9,14 @@ import '../Styles/RegisterDoctor.css';
 
 
 const api= axios.create({
-    baseURL: 'http://localhost:8081/doctor'
+    baseURL: 'http://localhost:8090/doctor'
 })
+
+const emailApi = axios.create({
+    baseURL: "http://localhost:8081/email"
+});
+
+
 
 export default function RegisterDoctor() {
     const navigate = useNavigate();
@@ -36,6 +42,21 @@ export default function RegisterDoctor() {
         password: password,
         confirmPassword: confirmPassword
     });
+
+    const registerNotification = {
+        recipient: `${data.emailId}`,
+        subject: "Welcome to Swasthyacare!",
+        msgBody: `
+        Dear ${data.fullname},
+    
+        Welcome to Swasthyacare! We are excited to have you on board.Congratulations! Your registration with Swasthyacare was successful.We are excited to have you on board and look forward to providing you with the best healthcare services.If you have any questions or need assistance, feel free to reach out to our support team.
+    
+        Thank you for choosing Swasthyacare!
+    
+        Best Regards,
+        The Swasthyacare Team
+        `
+    };
 
     const [errors, setErrors] = useState({});
 
@@ -88,6 +109,7 @@ export default function RegisterDoctor() {
         try{
         dispatch(setRes(data));
         const response = await api.post('/',data);
+        const res = await emailApi.post("/sendMail",registerNotification);
         navigate("/logindoctor");
         }
         catch(err){

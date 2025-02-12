@@ -13,7 +13,12 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const api = axios.create({
     baseURL: 'http://localhost:8089/patient'
-})
+});
+
+const emailApi = axios.create({
+    baseURL: "http://localhost:8081/email"
+});
+
 
 export default function RegisterPatientComponent() {
     const navigate = useNavigate(); // Correct usage inside the component
@@ -21,7 +26,7 @@ export default function RegisterPatientComponent() {
     const location = useLocation();
 
 
-    const {emailId, password, confirmPassword } = location.state || {}
+    const { emailId, password, confirmPassword } = location.state || {}
     console.log(password, confirmPassword);
     const res = useSelector((state) => state.res); // Assuming res is the response from registration
     const [isRegister, setIsRegister] = useState(true); // Toggle between Register and Login
@@ -40,6 +45,26 @@ export default function RegisterPatientComponent() {
     });
 
     const [errors, setErrors] = useState({});
+
+
+    const registerNotification = {
+        recipient: `${data.emailId}`,
+        subject: "Welcome to Swasthyacare!",
+        msgBody: `
+            Dear ${data.firstName +" "+ data.lastName},
+    
+            Welcome to Swasthyacare! We are excited to have you on board.
+    
+            Congratulations! Your registration with Swasthyacare was successful.
+            We are excited to have you on board and look forward to providing you with the best healthcare services.
+            If you have any questions or need assistance, feel free to reach out to our support team.
+
+            Thank you for choosing Swasthyacare!
+
+            Best Regards,
+            The Swasthyacare Team
+        `
+    };
 
     // const handleChange = (event) => {
     //     setData({ ...data, [event.target.id]: event.target.value });
@@ -98,6 +123,7 @@ export default function RegisterPatientComponent() {
             try {
                 dispatch(setRes(data));
                 const response = await api.post("/", data);
+                const res = await emailApi.post("/sendMail",registerNotification);
                 navigate("/loginpatient");
             }
             catch (error) {

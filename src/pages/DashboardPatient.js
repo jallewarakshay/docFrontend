@@ -4,6 +4,7 @@ import HeaderLog from "../components/HeaderLog";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Bar, Pie } from 'react-chartjs-2';
+import { Link, useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -21,6 +22,7 @@ function DashboardPatient() {
 
   const location = useLocation();
   const { userId } = location.state || {}
+  const navigate = useNavigate();
 
   // Load appointments from local storage
   const apptApi = axios.create({
@@ -208,6 +210,34 @@ function DashboardPatient() {
                     Book Appointment
                   </button>
                 </form>
+
+                <h4 className="mt-4">Your Appointments</h4>
+                {appointments.length > 0 ? (
+                  appointments.map((appointment) => (
+                    <div key={appointment.id} className="border p-3 mb-2">
+                      <p><strong>Status:</strong> {appointment.status}</p>
+                      <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appointment.time}</p>
+                      <button
+                        className="btn btn-info me-2"
+                        onClick={() => 
+                          // navigate(`/room/${appointment.id}`
+                          navigate(`/room/${appointment.id}`
+                          
+                          )} // Navigate to Videopage
+                      >
+                        Join
+                      </button>
+                      <div class="d-flex justify-content-around">
+                      <Link className="font-weight-bold hover-effect" to="/payment" style={{ color: '#343a40' }}> Make Payment
+                       </Link>    
+                      <button className="btn btn-secondary">View Report</button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No appointments booked yet.</p>
+                )}
               </div>
             )}
 

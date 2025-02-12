@@ -18,7 +18,12 @@ export default function LoginDoctor() {
 
     const api = axios.create({ 
         baseURL: "http://localhost:8083/user"
-     })
+     });
+
+     const emailApi = axios.create({
+        baseURL: "http://localhost:8081/email"
+    });
+    
 
 
     async function myFunc(e) {
@@ -36,6 +41,31 @@ export default function LoginDoctor() {
                     if(response.status == 200){
                         if(response.data.password === password){
                             setIsInCorrectPassword(false);
+                            const loginEmailNotification = {
+                                "recipient":email,
+                                "subject":"Login Successful!",
+                                "msgBody":` 
+                                We are pleased to inform you that your login to Swasthyacare was successful at  ${new Date().toLocaleString()}.
+
+                                You can now access your account and explore our services.
+                                If you did not attempt to log in, please secure your account by changing your password immediately.
+                                If you have any questions or need assistance, feel free to reach out to our support team.
+
+                                Thank you for choosing Swasthyacare!
+
+                                Best Regards,
+                                The Swasthyacare Team
+                                 `
+                            }
+                            const res = await emailApi.post("/sendMail",loginEmailNotification);
+        
+        
+                            // Check if the email was sent successfully
+                            if (res.status === 200) {
+                                alert("Email notification sent successfully.");
+                            } else {
+                                alert("Failed to send email notification.");
+                            }
                             navigate("/dashboardDoctor",{state: {userId: response.data.userId}});
                         } else {
                             setIsInCorrectPassword(true);

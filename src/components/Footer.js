@@ -9,8 +9,8 @@ function Footer() {
                 <div className="row">
                     {/* Featured Section (3 Columns) */}
                     <div className="col-lg-3 mb-4">
-                        <h1 className="fw-bold d-flex align-items-center text-dark">Doc</h1>
-                        <h2 className="fw-bold d-flex align-items-center ">Talk</h2>
+                        <h1 className="fw-bold d-flex align-items-center text-dark">Swasthya</h1>
+                        <h2 className="fw-bold d-flex align-items-center text-success">Care</h2>
 
                         <div className="d-flex align-items-center social-icons">
                             <a className="text-dark me-3" href="https://instagram.com" target="_blank">
@@ -44,7 +44,7 @@ function Footer() {
                         <div className="row">
                             {/* DocTalk Section */}
                             <div className="col-md-3 mb-4">
-                                <h5 className="fw-bold text-dark"><b>DocTalk</b></h5>
+                                <h5 className="fw-bold text-dark"><b>SwasthyaCare</b></h5>
                                 <ul className="list-unstyled">
                                     <li><a href="#" className="text-dark text-decoration-none">Home</a></li>
                                     <li><a href="#" className="text-dark text-decoration-none">Docs</a></li>

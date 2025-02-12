@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Bar } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
-import { data, useLocation } from "react-router-dom";
+import { data, useLocation,useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Register Chart.js components
@@ -15,6 +15,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [selectedView, setSelectedView] = useState("overview");
+  const navigate = useNavigate();
 
   const location = useLocation();
 
@@ -23,7 +24,7 @@ export default function DoctorDashboard() {
   useEffect(() => {
     try{
       const api = axios.create({
-        baseURL: "http://localhost:8081/doctor"
+        baseURL: "http://localhost:8090/doctor"
       });
       const response = api.get("/"+ userId);
   
@@ -36,6 +37,9 @@ export default function DoctorDashboard() {
   },[]);
 
 
+  const emailApi = axios.create({
+    baseURL: "http://localhost:8081/email"
+});
 
   // Data for profile
   const profileData = {
@@ -53,6 +57,30 @@ export default function DoctorDashboard() {
     { name: "Paritosh Uukey", date: "2025-01-15", diagnosis: "Flu" },
     { name: "Abhinav Kawalkar", date: "2025-01-20", diagnosis: "Piles" }
   ];
+
+//   const bookingConfirmationNotification = {
+//     recipients: [email1, email2], // Use the users' emails
+//     subject: "Appointment Status",
+//     msgBody:`
+//         Dear ${patientName},
+
+//         We are pleased to ${statusUpdate} your appointment with us. Below are the details of your booking:
+
+//         Appointment Details:
+//         - Date: ${date}
+//         - Time: ${time}
+//         - Service: ${link} to join
+
+//         If you have any questions or need to reschedule, please do not hesitate to contact our support team.
+
+//         Thank you for choosing Swasthyacare! We look forward to seeing you soon.
+
+//         Best Regards,
+//         The Swasthyacare Team
+//     `
+// };
+
+
 
   // Load appointments from local storage
   useEffect(() => {
@@ -108,8 +136,9 @@ export default function DoctorDashboard() {
   const updateStatus = (id, newStatus) => {
     
     const updatedAppointments = appointments.map((appointment) =>
-      appointment.id === id ? { ...appointment, status: newStatus } : appointment
+      appointment.id === id ? { ...appointment, status: newStatus } : appointment,
     );
+
     setAppointments(updatedAppointments);
     localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
     toast.success(`Appointment marked as ${newStatus}`);
@@ -225,8 +254,37 @@ export default function DoctorDashboard() {
                     ))
                   )}
                 </ul>
+                <h4 className="mt-4">Your Appointments</h4>
+                {appointments.length > 0 ? (
+                  appointments.map((appointment) => (
+                    <div key={appointment.id} className="border p-3 mb-2">
+                      <p><strong>Status:</strong> {appointment.status}</p>
+                      <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appointment.time}</p>
+                      <button
+                        className="btn btn-info me-2"
+                        onClick={() => 
+                          // navigate(`/room/${appointment.id}`
+                          navigate(`/room/${appointment.id}`
+                          
+                          )} // Navigate to Videopage
+                      >
+                        Join
+                      </button>
+                      <div class="d-flex justify-content-around">
+                      <button className="btn btn-warning">Create Report</button>
+                      <button className="btn btn-secondary">View Report</button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No appointments booked yet.</p>
+                )}
+                
               </div>
             )}
+
+            
 
             {selectedView === "profile" && (
               <div style={{ width: "50%", margin: "auto", padding: "20px", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" }}>
