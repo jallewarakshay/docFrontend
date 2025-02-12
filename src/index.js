@@ -15,26 +15,44 @@ import About from './pages/About';
 import Gallery from './pages/Gallery';
 import DashboardPatient from './pages/DashboardPatient';
 import DashboardDoctor from './pages/DashboardDoctor';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './routes/PrivateRoutes';
 //pages
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <Provider store={store}>
-        <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<App />} />
-                <Route path='/help' element={<Help />} />
-                <Route path='/about' element={<About />} />
-                <Route path='/gallery' element={<Gallery />} />
-                <Route path='/loginpatient' element={<LoginPatient />} />
-                <Route path='/logindoctor' element={<LoginDoctor />} />
-                <Route path='/registerdoctor' element={<RegisterDoctor />} />
-                <Route path='/registerpatient' element={<RegisterPatient />} />
-                <Route path='/dashboardPatient' element={<DashboardPatient/>}/>
-                <Route path='/dashboardDoctor' element={<DashboardDoctor/>}/>
-            </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' element={<App />} />
+                    <Route path='/help' element={<Help />} />
+                    <Route path='/about' element={<About />} />
+                    <Route path='/gallery' element={<Gallery />} />
+                    <Route path='/loginpatient' element={<LoginPatient />} />
+                    <Route path='/logindoctor' element={<LoginDoctor />} />
+                    <Route path='/registerdoctor' element={<RegisterDoctor />} />
+                    <Route path='/registerpatient' element={<RegisterPatient />} />
+                    <Route 
+                        path='/dashboardPatient' 
+                        element={
+                            <PrivateRoute redirectPath="/loginpatient">
+                                <DashboardPatient />
+                            </PrivateRoute>
+                        } 
+                    />
+                    <Route 
+                        path='/dashboardDoctor' 
+                        element={
+                            <PrivateRoute redirectPath="/logindoctor">
+                                <DashboardDoctor />
+                            </PrivateRoute>
+                        } 
+                    />
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
     </Provider>
 );
 

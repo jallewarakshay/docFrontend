@@ -33,18 +33,16 @@ export default function LoginPatient() {
                 navigate("/registerpatient", { state: { emailId: email, password: password, confirmPassword: confirmPassword } })
             else {
                 try {
-                    const response = await api.post("/login", { emailId: email });
-                    console.log("userData:",response.data.userId);
+                    const response = await api.post('/login', { emailId: email, password: password }); console.log("userData:", response.data.userId);
+                    console.log(response.data);
                     if (response.status == 200) {
-                        if (response.data.password === password) {
-                            setIsInCorrectPassword(false);
-                            navigate("/dashboardPatient", { state: { userId: response.data.userId } })
-                        } else {
-                            setIsInCorrectPassword(true);
-                        }
+
+                        setIsInCorrectPassword(false);
+                        const { authToken, user } = response.data;
+                        sessionStorage.setItem('authToken', authToken);
+                        sessionStorage.setItem('user', JSON.stringify(user));
+                        navigate('/dashboardPatient', { state: { userId: user.userId, user } })
                     }
-                    //    console.log(response.data.password,response.data.emailId);
-                    //    console.log(response.data);
                 } catch (error) {
                     console.error("Error occured");
                 }
