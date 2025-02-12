@@ -78,7 +78,7 @@ const About = () => {
         <section className="d-flex justify-content-center align-items-center p-4" style={{ borderRadius: "10px" }}>
           <img 
             src="https://iili.io/2QLnxJs.webp" 
-            alt="DocTalk Team" 
+            alt="SwasthyaCare Team" 
             style={{ 
               width: "300px", 
               borderRadius: "10px", 
@@ -87,7 +87,7 @@ const About = () => {
             }} 
           />
           <div>
-            <h2 className="fw-bold" style={{color:"black"}}><b>The DocTalk Team</b></h2>
+            <h2 className="fw-bold" style={{color:"black"}}><b>The SwasthyaCare Team</b></h2>
             <p style={{ maxWidth: "400px", fontSize: "14px", lineHeight: "1.5" }}>
               Medical, Technology & Business Domain Experts coming together as One Team to build 
               One Healthcare Platform that solves complex healthcare problems of billions of people via 

@@ -37,6 +37,9 @@ export default function DoctorDashboard() {
   },[]);
 
 
+  const emailApi = axios.create({
+    baseURL: "http://localhost:8081/email"
+});
 
   // Data for profile
   const profileData = {
@@ -54,6 +57,30 @@ export default function DoctorDashboard() {
     { name: "Paritosh Uukey", date: "2025-01-15", diagnosis: "Flu" },
     { name: "Abhinav Kawalkar", date: "2025-01-20", diagnosis: "Piles" }
   ];
+
+//   const bookingConfirmationNotification = {
+//     recipients: [email1, email2], // Use the users' emails
+//     subject: "Appointment Status",
+//     msgBody:`
+//         Dear ${patientName},
+
+//         We are pleased to ${statusUpdate} your appointment with us. Below are the details of your booking:
+
+//         Appointment Details:
+//         - Date: ${date}
+//         - Time: ${time}
+//         - Service: ${link} to join
+
+//         If you have any questions or need to reschedule, please do not hesitate to contact our support team.
+
+//         Thank you for choosing Swasthyacare! We look forward to seeing you soon.
+
+//         Best Regards,
+//         The Swasthyacare Team
+//     `
+// };
+
+
 
   // Load appointments from local storage
   useEffect(() => {
@@ -108,8 +135,9 @@ export default function DoctorDashboard() {
   // Update appointment status
   const updateStatus = (id, newStatus) => {
     const updatedAppointments = appointments.map((appointment) =>
-      appointment.id === id ? { ...appointment, status: newStatus } : appointment
+      appointment.id === id ? { ...appointment, status: newStatus } : appointment,
     );
+
     setAppointments(updatedAppointments);
     localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
     toast.success(`Appointment marked as ${newStatus}`);
@@ -242,7 +270,10 @@ export default function DoctorDashboard() {
                       >
                         Join
                       </button>
+                      <div class="d-flex justify-content-around">
+                      <button className="btn btn-warning">Create Report</button>
                       <button className="btn btn-secondary">View Report</button>
+                      </div>
                     </div>
                   ))
                 ) : (

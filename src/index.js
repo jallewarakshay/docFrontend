@@ -16,6 +16,7 @@ import Gallery from './pages/Gallery';
 import DashboardPatient from './pages/DashboardPatient';
 import DashboardDoctor from './pages/DashboardDoctor';
 import Videopage from './pages/Videopage';
+import Payment from './pages/payment';
 //pages
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -35,6 +36,7 @@ root.render(
                 <Route path='/dashboardPatient' element={<DashboardPatient/>}/>
                 <Route path='/dashboardDoctor' element={<DashboardDoctor/>}/>
                 <Route path="/room/:id" element={<Videopage/>} />
+                <Route path="/payment" element={<Payment/>}/>
             </Routes>
         </BrowserRouter>
     </Provider>

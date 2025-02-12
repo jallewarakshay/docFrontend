@@ -4,7 +4,7 @@ import HeaderLog from "../components/HeaderLog";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Bar, Pie } from 'react-chartjs-2';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -170,7 +170,11 @@ function DashboardPatient() {
                       >
                         Join
                       </button>
+                      <div class="d-flex justify-content-around">
+                      <Link className="font-weight-bold hover-effect" to="/payment" style={{ color: '#343a40' }}> Make Payment
+                       </Link>    
                       <button className="btn btn-secondary">View Report</button>
+                      </div>
                     </div>
                   ))
                 ) : (
